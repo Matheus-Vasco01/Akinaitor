@@ -3,6 +3,18 @@ import '../../../../core/constants/app_colors.dart';
 
 enum GameState { playing, guessing, wrongChoice, victory }
 
+class Professor {
+  final String name;
+  final String subject;
+  final String description;
+
+  const Professor({
+    required this.name,
+    required this.subject,
+    required this.description,
+  });
+}
+
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
 
@@ -13,22 +25,100 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   GameState _state = GameState.playing;
   int _questionIndex = 1;
+  final List<String> _userAnswers = [];
+  Professor? _guessedProfessor;
 
-  final List<String> _questions = [
-    'Esse professor usa muito quadro ou lousa nas aulas?',
-    'Esse professor ensina desenvolvimento Mobile com Flutter?',
-    'Esse professor diz que HTML nao e linguagem de programacao?',
-    'Esse professor toma cafe em caneca com estampa de codigo?',
-    'Esse professor reclama de chaves ou ponto e virgula esquecidos?',
-    'Esse professor fala muito sobre ponteiros ou alocacao de memoria?',
-    'Esse professor ja trabalhou desenvolvendo sistemas legados em COBOL?',
-    'Esse professor prefere usar o terminal ao inves de IDEs visuais?',
-    'Esse professor passa trabalhos praticos com prazos quase impossiveis?',
-    'Esse professor ensina a criar consultas complexas em SQL?',
+  final List<Professor> _professores = const [
+    Professor(
+      name: 'Fabiane',
+      subject: 'Coordenadora',
+      description: 'Lidera o curso com maestria, resolve todos os pepinos e organiza as diretrizes do semestre.',
+    ),
+    Professor(
+      name: 'Jefferson Speck',
+      subject: 'Mobile',
+      description: 'Adora criar apps responsivos, ensina Flutter/Kotlin e fala sobre o ciclo de vida das views.',
+    ),
+    Professor(
+      name: 'Jeferson Bigode',
+      subject: 'IA (Inteligencia Artificial)',
+      description: 'Manja tudo de Redes Neurais, Machine Learning, Visao Computacional e algoritmos inteligentes.',
+    ),
+    Professor(
+      name: 'Andre Dorr',
+      subject: 'Teste de Software',
+      description: 'Garante a qualidade do codigo, ensina testes unitarios e odeia bugs em producao.',
+    ),
+    Professor(
+      name: 'Renato',
+      subject: 'Projeto Integrador',
+      description: 'Orienta o desenvolvimento dos projetos reais juntando todas as materias do semestre.',
+    ),
+    Professor(
+      name: 'Marcel',
+      subject: 'Empreendedorismo',
+      description: 'Te ensina a criar startups, planejar modelos de negocio Canvas e fazer pitchs matadores.',
+    ),
+    Professor(
+      name: 'Hiago',
+      subject: 'Gestao de Projetos',
+      description: 'Planeja escopo, cronogramas, metodologias ageis (Scrum/Kanban) e evita atrasos de entrega.',
+    ),
+    Professor(
+      name: 'Alan',
+      subject: 'Engenharia de Requisitos',
+      description: 'Define as regras do sistema, escreve casos de uso e alinha o software com o cliente.',
+    ),
+    Professor(
+      name: 'Wander',
+      subject: 'Manutencao de Computadores',
+      description: 'Desvenda o hardware, ensina a montar circuitos, arrumar PCs e entender a arquitetura.',
+    ),
+    Professor(
+      name: 'Willian',
+      subject: 'Banco de Dados',
+      description: 'Domina queries SQL, modelagem de dados relacionais e fala sobre Normalizacao e Triggers.',
+    ),
+    Professor(
+      name: 'Guilherme Alves',
+      subject: 'Micro Servicos',
+      description: 'Especialista em arquiteturas distribuidas, APIs REST escalaveis e Docker.',
+    ),
+    Professor(
+      name: 'Marcos Guido',
+      subject: 'Redes de Computadores',
+      description: 'Decifra pacotes TCP/IP, roteamento, subredes e mantem a internet da faculdade funcionando.',
+    ),
+    Professor(
+      name: 'Leticia',
+      subject: 'Versionamento',
+      description: 'Mestra do Git, resolve conflitos de merge de olhos fechados e ensina Git Flow.',
+    ),
+    Professor(
+      name: 'Fabiano',
+      subject: 'Leis de Lehman',
+      description: 'Explica a evolucao e o envelhecimento dos sistemas de software pelas leis de Lehman.',
+    ),
+  ];
+
+  final List<String> _questions = const [
+    'Esse professor ensina sobre Git, Merges e Versionamento?',
+    'Esse professor ministra aulas focadas em Desenvolvimento Mobile?',
+    'Esse professor e especialista em Inteligencia Artificial (IA)?',
+    'Esse professor ensina sobre Banco de Dados, Queries SQL e Tabelas?',
+    'Essa pessoa e a Coordenadora Geral do curso?',
+    'Esse professor explica sobre Redes, Protocolos e Pacotes TCP/IP?',
+    'Esse professor foca em Testes de Software e Garantia de Qualidade (QA)?',
+    'Esse professor fala sobre Evolucao de Software e Leis de Lehman?',
+    'Esse professor ensina sobre Micro Servicos, Docker ou APIs escalaveis?',
+    'Esse professor trata de Requisitos, Casos de Uso e regras de negocio?',
   ];
 
   void _answerQuestion(String answer) {
+    _userAnswers.add(answer);
+
     if (_questionIndex == 5 && _state == GameState.playing) {
+      _calculateGuess();
       setState(() {
         _state = GameState.guessing;
       });
@@ -37,9 +127,59 @@ class _GameScreenState extends State<GameScreen> {
         _questionIndex++;
       });
     } else {
+      _calculateGuess();
       setState(() {
         _state = GameState.guessing;
       });
+    }
+  }
+
+  void _calculateGuess() {
+    int matchedIndex = -1;
+    for (int i = 0; i < _userAnswers.length; i++) {
+      if (_userAnswers[i] == 'Sim' || _userAnswers[i] == 'Provavelmente sim') {
+        matchedIndex = i;
+        break;
+      }
+    }
+
+    if (matchedIndex != -1) {
+      switch (matchedIndex) {
+        case 0:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Leticia');
+          break;
+        case 1:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Jefferson Speck');
+          break;
+        case 2:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Jeferson Bigode');
+          break;
+        case 3:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Willian');
+          break;
+        case 4:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Fabiane');
+          break;
+        case 5:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Marcos Guido');
+          break;
+        case 6:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Andre Dorr');
+          break;
+        case 7:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Fabiano');
+          break;
+        case 8:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Guilherme Alves');
+          break;
+        case 9:
+          _guessedProfessor = _professores.firstWhere((p) => p.name == 'Alan');
+          break;
+      }
+    } else {
+      final fallbacks = ['Renato', 'Marcel', 'Hiago', 'Wander'];
+      final fallbackName = fallbacks[_userAnswers.length % fallbacks.length];
+      _guessedProfessor = _professores.firstWhere((p) => p.name == fallbackName);
     }
   }
 
@@ -47,6 +187,8 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       _state = GameState.playing;
       _questionIndex = 1;
+      _userAnswers.clear();
+      _guessedProfessor = null;
     });
   }
 
@@ -235,11 +377,9 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildGuessingState() {
-    final bool isFirstGuess = _questionIndex <= 5;
-    final String guessTitle = isFirstGuess ? 'Professor de Algoritmos' : 'Professor de Banco de Dados';
-    final String guessDesc = isFirstGuess
-        ? 'Te ensina Portugol e faz voce escrever codigo em folha de papel almaco.'
-        : 'Explica a terceira forma normal e diz que tudo na vida e um relacionamento de muitos para muitos.';
+    final String guessName = _guessedProfessor?.name ?? 'Professor';
+    final String guessSubject = _guessedProfessor?.subject ?? 'Materia';
+    final String guessDesc = _guessedProfessor?.description ?? 'Descricao do professor.';
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -287,13 +427,22 @@ class _GameScreenState extends State<GameScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                guessTitle,
+                guessName,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: AppColors.primary,
-                  fontSize: 26,
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0.5,
+                ),
+              ),
+              Text(
+                'Professor(a) de $guessSubject',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),

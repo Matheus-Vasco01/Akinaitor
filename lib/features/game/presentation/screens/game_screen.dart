@@ -22,6 +22,31 @@ class _GameScreenState extends State<GameScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
+  String? _getTeacherImage(String? name) {
+    if (name == null) return null;
+    final lowercaseName = name.toLowerCase();
+    if (lowercaseName.contains('jefferson speck')) {
+      return 'assets/images/jefferson_speck.jpg';
+    } else if (lowercaseName.contains('jeferson vorpagel') || lowercaseName.contains('vorpagel')) {
+      return 'assets/images/jeferson_vorpagel.jpg';
+    } else if (lowercaseName.contains('willian')) {
+      return 'assets/images/willian.png';
+    } else if (lowercaseName.contains('fabiane') || lowercaseName.contains('fabi')) {
+      return 'assets/images/fabi.jpg';
+    } else if (lowercaseName.contains('letícia') || lowercaseName.contains('leticia')) {
+      return 'assets/images/leticia.jpg';
+    } else if (lowercaseName.contains('andré dorr') || lowercaseName.contains('andre dorr')) {
+      return 'assets/images/andre_dorr.jpg';
+    } else if (lowercaseName.contains('hiago')) {
+      return 'assets/images/hiago.jpg';
+    } else if (lowercaseName.contains('guilherme alves')) {
+      return 'assets/images/guilherme_alves.jpg';
+    } else if (lowercaseName.contains('vander')) {
+      return 'assets/images/vander.jpg';
+    }
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -388,6 +413,7 @@ class _GameScreenState extends State<GameScreen> {
     final engine = _engine;
     final guessedTeacher = engine?.finalGuess;
     final answeredCount = engine?.answeredQuestions.length ?? 0;
+    final customImage = _getTeacherImage(guessedTeacher?.name);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -396,12 +422,36 @@ class _GameScreenState extends State<GameScreen> {
         Center(
           child: SizedBox(
             height: 200,
-            child: Image.asset(
-              answeredCount <= 5
-                  ? 'assets/images/raccoon_questions.png'
-                  : 'assets/images/detective_questions.png',
-              fit: BoxFit.contain,
-            ),
+            child: customImage != null
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppColors.primary,
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(21),
+                      child: Image.asset(
+                        customImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : Image.asset(
+                    answeredCount <= 5
+                        ? 'assets/images/raccoon_questions.png'
+                        : 'assets/images/detective_questions.png',
+                    fit: BoxFit.contain,
+                  ),
           ),
         ),
         const SizedBox(height: 30),
@@ -639,6 +689,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildVictoryState() {
     final guessedTeacher = _engine?.finalGuess?.name ?? 'Professor';
     final answeredCount = _engine?.answeredQuestions.length ?? 0;
+    final customImage = _getTeacherImage(guessedTeacher);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -647,10 +698,34 @@ class _GameScreenState extends State<GameScreen> {
         Center(
           child: SizedBox(
             height: 220,
-            child: Image.asset(
-              'assets/images/akinator_success.png',
-              fit: BoxFit.contain,
-            ),
+            child: customImage != null
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppColors.primary,
+                        width: 3,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(21),
+                      child: Image.asset(
+                        customImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  )
+                : Image.asset(
+                    'assets/images/akinator_success.png',
+                    fit: BoxFit.contain,
+                  ),
           ),
         ),
         const SizedBox(height: 30),

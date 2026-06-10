@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 // Subtítulo
                 const Text(
-                  'O genio mais inteligente da escola!',
+                  'O genio mais inteligente da faculdade!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.textSecondary,
@@ -80,7 +80,7 @@ class HomeScreen extends StatelessWidget {
                   child: const Column(
                     children: [
                       Text(
-                        'Pense em um professor de programacao da sua escola...',
+                        'Pense em um professor da faculdade Biopark...',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 12),
                       Text(
-                        'Pode ser o de algoritmos que passa conta impossivel, o de banco de dados que sabe tudo, ou ate o de desenvolvimento mobile que adora Flutter!',
+                        'Professores disponíveis: Fabiane, Jefferson Speck, Jhoni, Willian, Guilherme Alves, Marcos Guido, Letícia, Jeferson Vorpagel, André Dorr, Renato, Marcel, Hiago, Wander, Alan, Fabiano.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: AppColors.textSecondary,

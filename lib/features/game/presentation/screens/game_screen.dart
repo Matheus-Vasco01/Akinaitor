@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/floating_widget.dart';
+import '../../../../core/widgets/pixel_background.dart';
+import '../../../../core/widgets/pixel_container.dart';
 import '../../data/akinator_repository.dart';
 import '../../domain/models/akinator_models.dart';
 import '../../domain/services/akinator_engine.dart';
@@ -31,7 +35,7 @@ class _GameScreenState extends State<GameScreen> {
       return 'assets/images/jeferson_vorpagel.jpg';
     } else if (lowercaseName.contains('willian')) {
       return 'assets/images/willian.png';
-    } else if (lowercaseName.contains('fabiane') || lowercaseName.contains('fabi')) {
+    } else if ((lowercaseName.contains('fabiane') || lowercaseName == 'fabi') && !lowercaseName.contains('fabiano')) {
       return 'assets/images/fabi.jpg';
     } else if (lowercaseName.contains('letícia') || lowercaseName.contains('leticia')) {
       return 'assets/images/leticia.jpg';
@@ -60,14 +64,10 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     try {
-      print('Loading game...');
       final data = await _repository.load();
-      print('depois');
       if (!mounted) {
         return;
       }
-
-      print('banco');
 
       setState(() {
         _engine = AkinatorEngine(
@@ -112,15 +112,10 @@ class _GameScreenState extends State<GameScreen> {
     setState(() {
       _state = GameState.playing;
     });
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppColors.tealGradient,
-        ),
+      body: PixelBackground(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
@@ -157,19 +152,20 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: AppColors.primary),
-          SizedBox(height: 20),
+          const CircularProgressIndicator(color: AppColors.primary),
+          const SizedBox(height: 20),
           Text(
-            'Preparando as perguntas do genio...',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+            'Preparando as perguntas...',
+            style: GoogleFonts.pressStart2p(
+              color: AppColors.primary,
+              fontSize: 12,
+              height: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -178,39 +174,47 @@ class _GameScreenState extends State<GameScreen> {
 
   Widget _buildErrorState() {
     return Center(
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.cardBg.withValues(alpha: 0.85),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.cardBorder, width: 1.5),
-        ),
+      child: PixelContainer(
+        backgroundColor: Colors.white,
+        borderColor: AppColors.primary,
+        borderWidth: 3.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(
               Icons.error_outline_rounded,
-              color: AppColors.answerNo,
-              size: 52,
+              color: AppColors.primary,
+              size: 48,
             ),
             const SizedBox(height: 16),
             Text(
               _errorMessage ?? 'Erro inesperado.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              style: GoogleFonts.vt323(
+                color: AppColors.textSecondary,
+                fontSize: 20,
                 height: 1.4,
               ),
             ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
+              height: 48,
               child: ElevatedButton(
                 onPressed: _loadGame,
-                child: const Text('Tentar novamente'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                ),
+                child: Text(
+                  'TENTAR NOVAMENTE',
+                  style: GoogleFonts.pressStart2p(
+                    fontSize: 10,
+                  ),
+                ),
               ),
             ),
           ],
@@ -218,7 +222,6 @@ class _GameScreenState extends State<GameScreen> {
       ),
     );
   }
-
   Widget _buildPlayingState() {
     final engine = _engine;
     final question = engine?.currentQuestion;
@@ -231,115 +234,62 @@ class _GameScreenState extends State<GameScreen> {
 
     return Column(
       children: [
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         Center(
           child: SizedBox(
-            height: 160,
-            child: Image.asset(
-              questionIndex <= 5
-                  ? 'assets/images/raccoon_questions.png'
-                  : 'assets/images/detective_questions.png',
-              fit: BoxFit.contain,
+            height: 140,
+            child: FloatingWidget(
+              child: Image.asset(
+                'assets/images/genie_happy.png',
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 30),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.cardBg.withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.cardBorder, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
+        const SizedBox(height: 20),
+        PixelContainer(
+          backgroundColor: AppColors.questionBg,
+          borderColor: AppColors.questionBorder,
+          borderWidth: 3.5,
+          tagText: 'PERGUNTA $questionIndex',
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+          child: Container(
+            width: double.infinity,
+            alignment: Alignment.center,
+            child: Text(
+              question.text,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.vt323(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                height: 1.3,
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '$questionIndex',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 16.0,
-                          bottom: 16.0,
-                          right: 20.0,
-                        ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            question.text,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(
-                color: AppColors.cardBorder,
-                height: 1.5,
-                thickness: 1.5,
-              ),
-              for (var index = 0; index < AkinatorAnswer.values.length; index++) ...[
-                _buildOption(
-                  AkinatorAnswer.values[index].label,
-                  () => _answerQuestion(AkinatorAnswer.values[index]),
-                  isLast: index == AkinatorAnswer.values.length - 1,
-                ),
-                if (index != AkinatorAnswer.values.length - 1)
-                  const Divider(color: AppColors.cardBorder, height: 1),
-              ],
-            ],
+            ),
           ),
         ),
-        const Spacer(),
-        TextButton.icon(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back_rounded,
-            color: AppColors.textSecondary,
-            size: 18,
+        const SizedBox(height: 20),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                for (var index = 0; index < AkinatorAnswer.values.length; index++)
+                  _buildOption(
+                    AkinatorAnswer.values[index].label,
+                    () => _answerQuestion(AkinatorAnswer.values[index]),
+                  ),
+              ],
+            ),
           ),
-          label: const Text(
-            'Voltar ao inicio',
-            style: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
+        ),
+        const SizedBox(height: 10),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            '<- VOLTAR AO INICIO',
+            style: GoogleFonts.pressStart2p(
+              color: AppColors.primary,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -354,13 +304,13 @@ class _GameScreenState extends State<GameScreen> {
     required String label,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.cardBg.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        color: Colors.white,
+        border: Border.all(color: AppColors.primary, width: 2.0),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: AppColors.primary, size: 18),
@@ -369,10 +319,10 @@ class _GameScreenState extends State<GameScreen> {
             child: Text(
               label,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+              style: GoogleFonts.vt323(
+                color: AppColors.primary,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -381,28 +331,27 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _buildOption(String label, VoidCallback onTap, {bool isLast = false}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: isLast
-            ? const BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              )
-            : null,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+  Widget _buildOption(String label, VoidCallback onTap) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: const Color(0xFFFCF9F7),
+          side: const BorderSide(color: Color(0xFFF0ECE9), width: 1.5),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          elevation: 0,
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.vt323(
+            color: AppColors.primary,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -412,7 +361,6 @@ class _GameScreenState extends State<GameScreen> {
   Widget _buildGuessingState() {
     final engine = _engine;
     final guessedTeacher = engine?.finalGuess;
-    final answeredCount = engine?.answeredQuestions.length ?? 0;
     final customImage = _getTeacherImage(guessedTeacher?.name);
 
     return Column(
@@ -425,79 +373,56 @@ class _GameScreenState extends State<GameScreen> {
             child: customImage != null
                 ? Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: AppColors.primary,
                         width: 3,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(21),
-                      child: Image.asset(
-                        customImage,
-                        fit: BoxFit.cover,
-                      ),
+                    child: Image.asset(
+                      customImage,
+                      fit: BoxFit.cover,
                     ),
                   )
-                : Image.asset(
-                    answeredCount <= 5
-                        ? 'assets/images/raccoon_questions.png'
-                        : 'assets/images/detective_questions.png',
-                    fit: BoxFit.contain,
+                : FloatingWidget(
+                    child: Image.asset(
+                      'assets/images/genie_happy.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
           ),
         ),
-        const SizedBox(height: 30),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppColors.cardBg.withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.cardBorder, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
+        const SizedBox(height: 24),
+        PixelContainer(
+          backgroundColor: Colors.white,
+          borderColor: AppColors.primary,
+          borderWidth: 3.0,
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Estou pensando em...',
-                style: TextStyle(
+                style: GoogleFonts.vt323(
                   color: AppColors.textSecondary,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 guessedTeacher?.name ?? 'Professor misterioso',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.pressStart2p(
                   color: AppColors.primary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text(
+              const SizedBox(height: 20),
+              Text(
                 'Acertei?',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+                style: GoogleFonts.vt323(
+                  color: AppColors.primary,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -506,7 +431,7 @@ class _GameScreenState extends State<GameScreen> {
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 52,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -514,17 +439,16 @@ class _GameScreenState extends State<GameScreen> {
                           });
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.answerYes,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Sim!',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: GoogleFonts.pressStart2p(
+                            fontSize: 12,
                           ),
                         ),
                       ),
@@ -533,25 +457,25 @@ class _GameScreenState extends State<GameScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: SizedBox(
-                      height: 52,
-                      child: ElevatedButton(
+                      height: 48,
+                      child: OutlinedButton(
                         onPressed: () {
                           setState(() {
                             _state = GameState.wrongChoice;
                           });
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.answerNo,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFCF9F7),
+                          side: const BorderSide(color: AppColors.primary, width: 2.0),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Errou!',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: GoogleFonts.pressStart2p(
+                            color: AppColors.primary,
+                            fontSize: 12,
                           ),
                         ),
                       ),
@@ -574,114 +498,79 @@ class _GameScreenState extends State<GameScreen> {
         const Spacer(),
         Center(
           child: SizedBox(
-            height: 200,
+            height: 160,
             child: Image.asset(
-              'assets/images/akinator_purple.png',
+              'assets/images/genie_confused.png',
               fit: BoxFit.contain,
             ),
           ),
         ),
-        const SizedBox(height: 30),
-        Container(
-          width: double.infinity,
+        const SizedBox(height: 24),
+        PixelContainer(
+          backgroundColor: Colors.white,
+          borderColor: AppColors.primary,
+          borderWidth: 3.0,
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppColors.cardBg.withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.cardBorder, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.help_outline_rounded,
-                color: AppColors.primary,
-                size: 48,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Voce quer tentar de novo?',
+              Text(
+                'VOCE ME PEGOU!',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
+                style: GoogleFonts.pressStart2p(
+                  color: AppColors.primary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  height: 1.4,
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'Se eu errei, reinicie a partida e responda as perguntas novamente.',
+              const SizedBox(height: 16),
+              Text(
+                'Deu erro 404 na minha mente... Na proxima eu compilo certo!',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: GoogleFonts.vt323(
                   color: AppColors.textSecondary,
-                  fontSize: 14,
+                  fontSize: 20,
                   height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 28),
-              Container(
-                width: double.infinity,
-                height: 52,
-                decoration: BoxDecoration(
-                  gradient: AppColors.magicGradient,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: ElevatedButton(
-                  onPressed: _resetGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.black,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Reiniciar partida',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                      color: AppColors.answerNo,
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Encerrar partida',
-                    style: TextStyle(
-                      color: AppColors.answerNo,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ),
               ),
             ],
           ),
         ),
         const Spacer(),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _resetGame,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+            child: Text(
+              'JOGAR DE NOVO',
+              style: GoogleFonts.pressStart2p(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            '<- VOLTAR AO INICIO',
+            style: GoogleFonts.pressStart2p(
+              color: AppColors.primary,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
       ],
     );
   }
@@ -697,134 +586,99 @@ class _GameScreenState extends State<GameScreen> {
         const Spacer(),
         Center(
           child: SizedBox(
-            height: 220,
+            height: 180,
             child: customImage != null
                 ? Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: AppColors.primary,
                         width: 3,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(21),
-                      child: Image.asset(
-                        customImage,
-                        fit: BoxFit.cover,
-                      ),
+                    child: Image.asset(
+                      customImage,
+                      fit: BoxFit.cover,
                     ),
                   )
-                : Image.asset(
-                    'assets/images/akinator_success.png',
-                    fit: BoxFit.contain,
+                : FloatingWidget(
+                    child: Image.asset(
+                      'assets/images/genie_happy.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
           ),
         ),
-        const SizedBox(height: 30),
-        Container(
-          width: double.infinity,
+        const SizedBox(height: 24),
+        PixelContainer(
+          backgroundColor: Colors.white,
+          borderColor: AppColors.primary,
+          borderWidth: 3.0,
           padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: AppColors.cardBg.withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.cardBorder, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Eu sou genial!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 12),
               Text(
-                'Voce estava pensando em $guessedTeacher.',
+                'EU SOU GENIAL!',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  height: 1.4,
+                style: GoogleFonts.pressStart2p(
+                  color: AppColors.primary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 16),
+              Text(
+                'Voce estava pensando em $guessedTeacher.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.vt323(
+                  color: AppColors.textSecondary,
+                  fontSize: 20,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
               _buildInfoBadge(
                 icon: Icons.question_answer_rounded,
                 label: '$answeredCount respostas',
-              ),
-              const SizedBox(height: 28),
-              Container(
-                width: double.infinity,
-                height: 52,
-                decoration: BoxDecoration(
-                  gradient: AppColors.magicGradient,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: ElevatedButton(
-                  onPressed: _resetGame,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.black,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Jogar novamente',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.cardBorder),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: const Text(
-                    'Voltar ao inicio',
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
               ),
             ],
           ),
         ),
         const Spacer(),
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: _resetGame,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+            child: Text(
+              'JOGAR NOVAMENTE',
+              style: GoogleFonts.pressStart2p(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            '<- VOLTAR AO INICIO',
+            style: GoogleFonts.pressStart2p(
+              color: AppColors.primary,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
       ],
     );
   }

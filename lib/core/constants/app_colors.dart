@@ -1,40 +1,48 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Cores de fundo Premium (Space Teal/Dark Navy)
-  static const Color background = Color(0xFF07171E);
-  static const Color backgroundDark = Color(0xFF030A0D);
+  // Retro Pixel theme colors (Light background, dark red accents)
+  static const Color background = Color(0xFFF6F5F5);
+  static const Color backgroundDark = Color(0xFFEBEAEA);
 
-  // Fundo dos Cards (Efeito Glassmorphism de alta fidelidade)
-  static const Color cardBg = Color(0xFF0C2530);
-  static const Color cardBorder = Color(0xFF163E4D);
+  // Background and border for retro widgets
+  static const Color cardBg = Color(0xFFFCF9F7);
+  static const Color cardBorder = Color(0xFF701220);
 
-  // Compatibilidade
+  // Compatibility
   static const Color surface = cardBg;
   static const Color border = cardBorder;
 
-  // Neon Cyan / Electric Blue (Ações primárias)
-  static const Color primary = Color(0xFF00E5FF);
-  static const Color primaryDark = Color(0xFF0097A7);
-  static const Color accent = Color(0xFF00B0FF);
+  // Primary burgundy/red-brown
+  static const Color primary = Color(0xFF701220);
+  static const Color primaryDark = Color(0xFF500A13);
+  static const Color accent = Color(0xFF0A2E1C); // Dark Green for question box
 
-  // Botões de Ação na Tela de Palpite
-  static const Color answerYes = Color(0xFF00E676);
-  static const Color answerNo = Color(0xFFFF1744);
+  // Action buttons
+  static const Color answerYes = Color(0xFF701220); // Burgundy for primary confirmation
+  static const Color answerNo = Color(0xFF5C514F);  // Gray-brown for secondary actions
 
-  // Textos
-  static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Color(0xFF98BCC7);
+  // Question container background (Forest Green)
+  static const Color questionBg = Color(0xFF0A2E1C);
+  static const Color questionBorder = Color(0xFF701220);
 
-  // Gradientes Premium
+  // Particle color
+  static const Color particle = Color(0xFFF3D8D8);
+
+  // Texts
+  static const Color textPrimary = Color(0xFF701220); // Burgundy for titles/headers
+  static const Color textSecondary = Color(0xFF5C514F); // Gray/brown for description/body
+  static const Color textDark = Color(0xFF1C1919);
+
+  // Gradients (simplified/solid look to fit pixel art theme)
   static const LinearGradient tealGradient = LinearGradient(
-    colors: [Color(0xFF0D2834), Color(0xFF051218)],
+    colors: [background, backgroundDark],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
 
   static const LinearGradient magicGradient = LinearGradient(
-    colors: [primary, Color(0xFF00B0FF)],
+    colors: [primary, primary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
